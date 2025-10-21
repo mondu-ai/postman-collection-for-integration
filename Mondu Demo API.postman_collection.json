@@ -1,0 +1,1615 @@
+{
+	"info": {
+		"_postman_id": "972f4a7f-7056-4e3f-acd4-926d0de2b2b3",
+		"name": "Mondu Demo API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8469610",
+		"_collection_link": "https://orange-moon-903283.postman.co/workspace/Mondu~6a590582-7ed4-447b-a591-199d1c61a8ce/collection/8469610-972f4a7f-7056-4e3f-acd4-926d0de2b2b3?action=share&source=collection_link&creator=8469610"
+	},
+	"item": [
+		{
+			"name": "Webhooks Endpoints",
+			"item": [
+				{
+					"name": "Create Webhook",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var webhookUUID = pm.response.json().webhook.uuid;",
+									"pm.collectionVariables.set(\"webhook_uuid\", webhookUUID);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n// https://docs.mondu.ai/reference/webhooks-overview\n// buyer / accepted | pending | declined\n// order / confirmed | declined\n\n  \"topic\": \"order\",\n  \"address\": \"https://webhooks.myshop.com/order\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/webhooks",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"webhooks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Webhooks",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var webhookUUID = pm.response.json().webhooks[0].uuid;",
+									"pm.collectionVariables.set(\"webhook_uuid\", webhookUUID);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/webhooks",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"webhooks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Webhook Keys",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var webhook_secret = pm.response.json().webhook_secret;",
+									"pm.collectionVariables.set(\"webhook_secret\", webhook_secret);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/webhooks/keys",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"webhooks",
+								"keys"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Webhook",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/webhooks/{{webhook_uuid}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"webhooks",
+								"{{webhook_uuid}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Buyer Onboarding Endpoints",
+			"item": [
+				{
+					"name": "Create Digital Trade Account",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  //MANDATORY PARAMETERS\n  \"external_reference_id\": \"your-buyer-id-123-456\",\n  \"redirect_urls\": {\n        \"success_url\": \"http://yourshop.com/success\",\n        \"cancel_url\": \"http://yourshop.com/cancel\",\n        \"declined_url\": \"http://yourshop.com/declined\"\n    },\n  \t//OPTIONAL PARAMETERS\n    \"applicant\": {\n        \"first_name\": \"Max\",\n        \"last_name\": \"Musterman\",\n        \"email\": \"accepted.good.randomstring@example.com\",// Buyer approved; all subsequent orders auto-approved\n        //\"email\": \"pending.pending-brc.randomstring@example.com\",// Buyer set to pending; all subsequent orders set to pending\n        //\"email\": \"declined@example.com\",// Buyer declined; all subsequent orders auto-declined\n        //https://docs.mondu.ai/v0.7/docs/start-integrating#32-buyer-onboarding-testing-digital-trade-account\n        \"phone\": \"030123456\"\n    },\n    \"company_details\": {\n    \"registration_address\": {\n      \"country_code\": \"DE\",\n      \"state\": \"Berlin\",\n      \"city\": \"Berlin\",\n      \"zip_code\": \"10117\",\n      \"address_line1\": \"Unter den Linden 16\"\n    },\n    \"legal_form_type\": \"registered_company\",\n    \"name\": \"Mondu GmbH\",\n    \"company_registration_id\": \"HRB 232626 B\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/trade_account",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"trade_account"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Hosted Buyer Onboarding",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  //MANDATORY PARAMETERS\n  \"external_reference_id\": \"your-buyer-id-123-456\",\n  \"redirect_urls\": {\n        \"success_url\": \"http://yourshop.com/success\",\n        \"cancel_url\": \"http://yourshop.com/cancel\",\n        \"declined_url\": \"http://yourshop.com/declined\"\n    },\n  \t//OPTIONAL PARAMETERS\n    \"applicant\": {\n        \"first_name\": \"Max\",\n        \"last_name\": \"Musterman\",\n        \"email\": \"accepted.good.randomstring@example.com\",// Buyer approved; all subsequent orders auto-approved\n        //\"email\": \"pending.pending-brc.randomstring@example.com\",// Buyer set to pending; all subsequent orders set to pending\n        //\"email\": \"declined@example.com\",// Buyer declined; all subsequent orders auto-declined\n        //https://docs.mondu.ai/v0.7/docs/start-integrating#32-buyer-onboarding-testing-digital-trade-account\n        \"phone\": \"030123456\"\n    },\n    \"company_details\": {\n    \"registration_address\": {\n      \"country_code\": \"DE\",\n      \"state\": \"Berlin\",\n      \"city\": \"Berlin\",\n      \"zip_code\": \"10117\",\n      \"address_line1\": \"Unter den Linden 16\"\n    },\n    \"legal_form_type\": \"registered_company\",\n    \"name\": \"Mondu GmbH\",\n    \"company_registration_id\": \"HRB 232626 B\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/buyers/hosted_onboarding",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"buyers",
+								"hosted_onboarding"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Buyer Limit",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/buyers/{{buyer_uuid}}/purchasing_limit",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"buyers",
+								"{{buyer_uuid}}",
+								"purchasing_limit"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Order Endpoints",
+			"item": [
+				{
+					"name": "Create Order - Merchant - Standard Payments",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var orderUUID = pm.response.json().order.uuid;",
+									"pm.collectionVariables.set(\"order_uuid\", orderUUID);",
+									"",
+									"var hostedCheckoutURL = pm.response.json().order.hosted_checkout_url;",
+									"pm.collectionVariables.set(\"order_hosted_checkout_url\",hostedCheckoutURL);",
+									"",
+									"var orderExternalReferenceId = pm.response.json().order.external_reference_id;",
+									"pm.collectionVariables.set(\"order_external_reference_id\",orderExternalReferenceId);",
+									"",
+									"var orderState = pm.response.json().order.state;",
+									"pm.collectionVariables.set(\"order_state\",orderState);",
+									"",
+									"const randomNumber = _.random(1000000000,9999999999)",
+									"pm.collectionVariables.set(\"randomNumber\", randomNumber )"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n //hosted checkout specific attributes\n \"source\": \"hosted\",\n \"state_flow\":\"authorization_flow\",\n \"success_url\": \"http://shopdomain.com/success\",\n \"cancel_url\": \"http://shopdomain.com/cancel\",\n \"declined_url\": \"http://shopdomain.com/declined\",\n \"language\": \"en\", //en|de|nl|fr\n\n //order specific attibutes\n \"payment_method\": \"invoice\",  //invoice|installment_by_invoice|direct_debit|installments|billing_statement\n \"currency\": \"EUR\",\n \"external_reference_id\": \"your-order-id-{{$randomUUID}}\",\n \"net_term\": 30, // 14|30|60|90\n \n\n \"buyer\": {\n   //mandatory attributes\n   \"email\": \"accepted.max.doe@example.com\", \n   //accepted.jon.max@example.com sets the order to status confirmed\n   //pending.jon.max@example.com sets the order to status pending\n   \"first_name\": \"Max\",\n   \"last_name\": \"Mustermann\",\n \n   //recommended to optimise ux in the mondu hosted checkout page\n   \"external_reference_id\": \"your-buyer-id-{{$randomUUID}}\",\n   \"company_name\": \"Mondu GmbH\",\n   \"legal_form\":\"GmbH\",\n   \"registration_id\": \"HRB232626B\", // company registration id\n   \"is_registered\": true, // true if the company is registered\n\n   //recommended to help mondu create better stats on buyer \n   \"account_created_at\": \"2023-08-22T15:25:56.265Z\",\n   \"account_updated_at\": \"2024-08-22T15:25:56.265Z\"\n   \n   //If buyer is onboarded add the buyer uuid sent via buyer webhook\n   //\"uuid\": \"3f228358-a916-436d-b35c-9c9ac869d155\"\n\n },\n\n \"billing_address\": {\n   \"country_code\": \"DE\",\n   \"city\": \"Berlin\",\n   \"zip_code\": \"10117\",\n   \"address_line1\": \"Unter den Linden 16\",\n   \"address_line2\": \"\",\n   \"state\": \"Berlin\"\n },\n\n \"shipping_address\": {\n   \"country_code\": \"DE\",\n   \"city\": \"Berlin\",\n   \"zip_code\": \"10117\",\n   \"address_line1\": \"Unter den Linden 16\",\n   \"address_line2\": \"\",\n   \"state\": \"Berlin\"\n },\n  //product related attriburtes\n \"gross_amount_cents\": 1875,\n\n \"lines\": [\n   {\n     \"shipping_price_cents\": 100,\n\t\t \"discount_cents\":10,\n       \"line_items\": [\n       {\n         \"quantity\": 10,\n         \"external_reference_id\": \"your-product-id-123-456\",\n         \"title\": \"Product A\",\n         \"net_price_per_item_cents\": 100,\n         \"item_type\": \"product|service\",\n         \"tax_cents\": 190\n       },\n       {\n         \"quantity\": 10,\n         \"external_reference_id\": \"your-product-id-987-654\",\n         \"title\": \"Product B\",\n         \"net_price_per_item_cents\": 50,\n         \"item_type\": \"product|service\",\n         \"tax_cents\": 95\n       }\n     ]\n   }\n ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/orders",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Order - Merchant - Billing Statement",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var orderUUID = pm.response.json().order.uuid;",
+									"pm.collectionVariables.set(\"order_uuid\", orderUUID);",
+									"",
+									"var hostedCheckoutURL = pm.response.json().order.hosted_checkout_url;",
+									"pm.collectionVariables.set(\"order_hosted_checkout_url\",hostedCheckoutURL);",
+									"",
+									"var orderExternalReferenceId = pm.response.json().order.external_reference_id;",
+									"pm.collectionVariables.set(\"order_external_reference_id\",orderExternalReferenceId);",
+									"",
+									"var orderState = pm.response.json().order.state;",
+									"pm.collectionVariables.set(\"order_state\",orderState);",
+									"",
+									"const randomNumber = _.random(1000000000,9999999999)",
+									"pm.collectionVariables.set(\"randomNumber\", randomNumber )"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n //hosted checkout specific attributes\n \"source\": \"hosted\",\n \"state_flow\":\"authorization_flow\",\n \"success_url\": \"http://shopdomain.com/success\",\n \"cancel_url\": \"http://shopdomain.com/cancel\",\n \"declined_url\": \"http://shopdomain.com/declined\",\n \"language\": \"en\", //en|de|nl|fr\n\n //order specific attibutes\n \"payment_method\": \"billing_statement\",  //invoice|installment_by_invoice|direct_debit|installments|billing_statement\n \"currency\": \"EUR\",\n \"external_reference_id\": \"your-order-id-{{$randomUUID}}\",\n \n \"buyer\": {\n   //mandatory attributes\n   \"email\": \"accepted.max.doe@example.com\", \n   //accepted.jon.max@example.com sets the order to status confirmed\n   //pending.jon.max@example.com sets the order to status pending\n   \"first_name\": \"Max\",\n   \"last_name\": \"Mustermann\",\n \n   //recommended to optimise ux in the mondu hosted checkout page\n   \"external_reference_id\": \"your-buyer-id-{{$randomUUID}}\",\n   \"company_name\": \"Mondu GmbH\",\n   \"legal_form\":\"GmbH\",\n   \"registration_id\": \"HRB232626B\", // company registration id\n   \"is_registered\": true, // true if the company is registered\n\n   //recommended to help mondu create better stats on buyer \n   \"account_created_at\": \"2023-08-22T15:25:56.265Z\",\n   \"account_updated_at\": \"2024-08-22T15:25:56.265Z\",\n   \n   //If buyer is onboarded add the buyer uuid sent via buyer webhook\n   \"uuid\": \"3f228358-a916-436d-b35c-9c9ac869d155\"\n\n },\n\n \"billing_address\": {\n   \"country_code\": \"DE\",\n   \"city\": \"Berlin\",\n   \"zip_code\": \"10117\",\n   \"address_line1\": \"Unter den Linden 16\",\n   \"address_line2\": \"\",\n   \"state\": \"Berlin\"\n },\n\n \"shipping_address\": {\n   \"country_code\": \"DE\",\n   \"city\": \"Berlin\",\n   \"zip_code\": \"10117\",\n   \"address_line1\": \"Unter den Linden 16\",\n   \"address_line2\": \"\",\n   \"state\": \"Berlin\"\n },\n  //product related attriburtes\n \"gross_amount_cents\": 1885,\n\n \"lines\": [\n   {\n      \"shipping_price_cents\": 100,\n       \"line_items\": [\n       {\n         \"quantity\": 10,\n         \"external_reference_id\": \"your-product-id-123-456\",\n         \"title\": \"Product A\",\n         \"net_price_per_item_cents\": 100,\n         \"item_type\": \"product|service\",\n         \"tax_cents\": 190\n       },\n       {\n         \"quantity\": 10,\n         \"external_reference_id\": \"your-product-id-987-654\",\n         \"title\": \"Product B\",\n         \"net_price_per_item_cents\": 50,\n         \"item_type\": \"product|service\",\n         \"tax_cents\": 95\n       }\n     ]\n   }\n ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/orders",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Order - Multi-Vendor Marketplace",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var orderUUID = pm.response.json().order.uuid;",
+									"pm.collectionVariables.set(\"order_uuid\", orderUUID);",
+									"",
+									"var hostedCheckoutURL = pm.response.json().order.hosted_checkout_url;",
+									"pm.collectionVariables.set(\"order_hosted_checkout_url\",hostedCheckoutURL);",
+									"",
+									"var orderExternalReferenceId = pm.response.json().order.external_reference_id;",
+									"pm.collectionVariables.set(\"order_external_reference_id\",orderExternalReferenceId);",
+									"",
+									"var orderState = pm.response.json().order.state;",
+									"pm.collectionVariables.set(\"order_state\",orderState);",
+									"",
+									"const randomNumber = _.random(1000000000,9999999999)",
+									"pm.collectionVariables.set(\"randomNumber\", randomNumber )"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n //hosted checkout specific attributes\n \"source\": \"hosted\",\n \"state_flow\":\"authorization_flow\",\n \"success_url\": \"http://shopdomain.com/success\",\n \"cancel_url\": \"http://shopdomain.com/cancel\",\n \"declined_url\": \"http://shopdomain.com/declined\",\n \"language\": \"en\", //en|de|nl|fr\n\n //order specific attibutes\n \"payment_method\": \"invoice\",  //invoice|installment_by_invoice|direct_debit|installments|billing_statement\n \"currency\": \"EUR\",\n \"external_reference_id\": \"your-order-id-{{$randomUUID}}\",\n \"net_term\": 30, //14|30|60|90\n \n\n \"buyer\": {\n   //mandatory attributes\n   \"email\": \"accepted.max.doe@example.com\", \n   //accepted.jon.max@example.com sets the order to status confirmed\n   //pending.jon.max@example.com sets the order to status pending\n   \"first_name\": \"Max\",\n   \"last_name\": \"Mustermann\",\n \n   //recommended to optimise ux in the mondu hosted checkout page\n   \"external_reference_id\": \"your-buyer-id-{{$randomUUID}}\",\n   \"company_name\": \"Mondu GmbH\",\n   \"legal_form\":\"GmbH\",\n   \"registration_id\": \"HRB232626B\", // company registration id\n   \"is_registered\": true, // true if the company is registered\n\n   //recommended to help mondu create better stats on buyer \n   \"account_created_at\": \"2023-08-22T15:25:56.265Z\",\n   \"account_updated_at\": \"2024-08-22T15:25:56.265Z\"\n   \n   //If buyer is onboarded add the buyer uuid sent via buyer webhook\n   //\"uuid\": \"3f228358-a916-436d-b35c-9c9ac869d155\"\n\n },\n\n \"billing_address\": {\n   \"country_code\": \"DE\",\n   \"city\": \"Berlin\",\n   \"zip_code\": \"10117\",\n   \"address_line1\": \"Unter den Linden 16\",\n   \"address_line2\": \"\",\n   \"state\": \"Berlin\"\n },\n\n \"shipping_address\": {\n   \"country_code\": \"DE\",\n   \"city\": \"Berlin\",\n   \"zip_code\": \"10117\",\n   \"address_line1\": \"Unter den Linden 16\",\n   \"address_line2\": \"\",\n   \"state\": \"Berlin\"\n },\n  //product related attriburtes\n \"gross_amount_cents\": 1970,\n \n \"lines\": [\n   {\n     \"vendor_external_reference_id\": \"your-vendor-id-1\", // vendor ID of first vendor\n     \"shipping_price_cents\": 100, \n\t\t \"discount_cents\": 10,\n       \"line_items\": [\n       {\n         \"quantity\": 10,\n         \"external_reference_id\": \"your-product-id-123-456\",\n         \"title\": \"Product A\",\n         \"net_price_per_item_cents\": 100,\n         \"item_type\": \"product|service\",\n         \"tax_cents\": 190\n       }\n     ]\n   },\n   {\n     \"vendor_external_reference_id\": \"your-vendor-id-2\", // vendor ID of first vendor\n     \"shipping_price_cents\": 100,\n \t\t \"discount_cents\": 5,\n       \"line_items\": [\n       {\n         \"quantity\": 10,\n         \"external_reference_id\": \"your-product-id-123-456\",\n         \"title\": \"Product B\",\n         \"net_price_per_item_cents\": 50,\n         \"item_type\": \"product|service\",\n         \"tax_cents\": 95\n       }\n     ]\n   }\n ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/orders",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Order - Single-Vendor Marketplace",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var orderUUID = pm.response.json().order.uuid;",
+									"pm.collectionVariables.set(\"order_uuid\", orderUUID);",
+									"",
+									"var hostedCheckoutURL = pm.response.json().order.hosted_checkout_url;",
+									"pm.collectionVariables.set(\"order_hosted_checkout_url\",hostedCheckoutURL);",
+									"",
+									"var orderExternalReferenceId = pm.response.json().order.external_reference_id;",
+									"pm.collectionVariables.set(\"order_external_reference_id\",orderExternalReferenceId);",
+									"",
+									"var orderState = pm.response.json().order.state;",
+									"pm.collectionVariables.set(\"order_state\",orderState);",
+									"",
+									"const randomNumber = _.random(1000000000,9999999999)",
+									"pm.collectionVariables.set(\"randomNumber\", randomNumber )"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n //hosted checkout specific attributes\n \"source\": \"hosted\",\n \"state_flow\":\"authorization_flow\",\n \"success_url\": \"http://shopdomain.com/success\",\n \"cancel_url\": \"http://shopdomain.com/cancel\",\n \"declined_url\": \"http://shopdomain.com/declined\",\n \"language\": \"en\", //en|de|nl|fr\n\n //order specific attibutes\n \"payment_method\": \"invoice\",  //invoice|installment_by_invoice|direct_debit|installments|billing_statement\n \"currency\": \"EUR\",\n \"external_reference_id\": \"your-order-id-{{$randomUUID}}\",\n \"net_term\": 30, //14|30|60|90\n \n \"buyer\": {\n   //mandatory attributes\n   \"email\": \"accepted.max.doe@example.com\", \n   //accepted.jon.max@example.com sets the order to status confirmed\n   //pending.jon.max@example.com sets the order to status pending\n   \"first_name\": \"Max\",\n   \"last_name\": \"Mustermann\",\n \n   //recommended to optimise ux in the mondu hosted checkout page\n   \"external_reference_id\": \"your-buyer-id-{{$randomUUID}}\",\n   \"company_name\": \"Mondu GmbH\",\n   \"legal_form\":\"GmbH\",\n   \"registration_id\": \"HRB232626B\", // company registration id\n   \"is_registered\": true, // true if the company is registered\n\n   //recommended to help mondu create better stats on buyer \n   \"account_created_at\": \"2023-08-22T15:25:56.265Z\",\n   \"account_updated_at\": \"2024-08-22T15:25:56.265Z\"\n   \n   //If buyer is onboarded add the buyer uuid sent via buyer webhook\n   //\"uuid\": \"3f228358-a916-436d-b35c-9c9ac869d155\"\n },\n\n \"billing_address\": {\n   \"country_code\": \"DE\",\n   \"city\": \"Berlin\",\n   \"zip_code\": \"10117\",\n   \"address_line1\": \"Unter den Linden 16\",\n   \"address_line2\": \"\",\n   \"state\": \"Berlin\"\n },\n\n \"shipping_address\": {\n   \"country_code\": \"DE\",\n   \"city\": \"Berlin\",\n   \"zip_code\": \"10117\",\n   \"address_line1\": \"Unter den Linden 16\",\n   \"address_line2\": \"\",\n   \"state\": \"Berlin\"\n },\n  //product related attriburtes\n \"gross_amount_cents\": 1870,\n \"total_discount_cents\": 15,\n \"vendor_external_reference_id\": \"your-vendor-id\", // vendor ID \n \"lines\": [\n   {\n    \"shipping_price_cents\": 100, \n\t\t\"discount_cents\":10,\n       \"line_items\": [\n       {\n         \"quantity\": 10,\n         \"external_reference_id\": \"your-product-id-123-456\",\n         \"title\": \"Product A\",\n         \"net_price_per_item_cents\": 100,\n         \"item_type\": \"product|service\",\n         \"tax_cents\": 190\n       },\n       {\n         \"quantity\": 10,\n         \"external_reference_id\": \"your-product-id-123-456\",\n         \"title\": \"Product B\",\n         \"net_price_per_item_cents\": 50,\n         \"item_type\": \"product|service\",\n         \"tax_cents\": 95\n       }\n     ]\n   }\n ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/orders",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm Order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var orderState = pm.response.json().order.state;",
+									"pm.collectionVariables.set(\"order_state\",orderState);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"external_reference_id\":\"{{order_external_reference_id}}\",\n  \"buyer_confirmed_at\": \"2025-01-31 08:27:04\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/orders/{{order_uuid}}/confirm",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"orders",
+								"{{order_uuid}}",
+								"confirm"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Order Async",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var orderUUID = pm.response.json().order.uuid;",
+									"pm.collectionVariables.set(\"order_uuid\", orderUUID);",
+									"",
+									"var orderExternalReferenceId = pm.response.json().order.external_reference_id;",
+									"pm.collectionVariables.set(\"order_external_reference_id\",orderExternalReferenceId);",
+									"",
+									"var orderState = pm.response.json().order.state;",
+									"pm.collectionVariables.set(\"order_state\",orderState);",
+									"",
+									"const randomNumber = _.random(1000000000,9999999999)",
+									"pm.collectionVariables.set(\"randomNumber\", randomNumber )"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n \"language\": \"en\", //en|de|nl|fr\n\n //order specific attibutes\n \"payment_method\": \"invoice\",  //invoice|installment_by_invoice|direct_debit|installments|billing_statement\n \"currency\": \"EUR\",\n \"external_reference_id\": \"your-order-id-{{$randomUUID}}\",\n \"net_term\": 30, // 14|30|60|90\n \n \"buyer\": {\n   //mandatory attributes\n   \"email\": \"accepted.max.doe@example.com\", \n   //accepted.jon.max@example.com sets the order to status confirmed\n   //pending.jon.max@example.com sets the order to status pending\n   \"first_name\": \"Max\",\n   \"last_name\": \"Mustermann\",\n \n   //recommended to optimise ux in the mondu hosted checkout page\n   \"external_reference_id\": \"your-buyer-id-{{$randomUUID}}\",\n   \"company_name\": \"Mondu GmbH\",\n   \"legal_form\":\"GmbH\",\n   \"registration_id\": \"HRB232626B\", // company registration id\n   \"is_registered\": true, // true if the company is registered\n\n   //recommended to help mondu create better stats on buyer \n   \"account_created_at\": \"2023-08-22T15:25:56.265Z\",\n   \"account_updated_at\": \"2024-08-22T15:25:56.265Z\"\n   //If buyer is onboarded add the buyer uuid sent via buyer webhook\n   //\"uuid\": \"3f228358-a916-436d-b35c-9c9ac869d155\"\n\n },\n  \n  \"owners\": [\n    {\n      \"first_name\": \"Michael\",\n      \"last_name\": \"Mustermensch\"\n    }\n  ],\n\n \"billing_address\": {\n   \"country_code\": \"DE\",\n   \"city\": \"Berlin\",\n   \"zip_code\": \"10117\",\n   \"address_line1\": \"Unter den Linden 16\",\n   \"address_line2\": \"\",\n   \"state\": \"Berlin\"\n },\n\n \"shipping_address\": {\n   \"country_code\": \"DE\",\n   \"city\": \"Berlin\",\n   \"zip_code\": \"10117\",\n   \"address_line1\": \"Unter den Linden 16\",\n   \"address_line2\": \"\",\n   \"state\": \"Berlin\"\n },\n  //product related attriburtes\n \"gross_amount_cents\": 1875,\n \"lines\": [\n   {\n      \"shipping_price_cents\": 100, \n      \"discount_cents\": 10,\n       \"line_items\": [\n       {\n         \"quantity\": 10,\n         \"external_reference_id\": \"your-product-id-123-456\",\n         \"title\": \"Product A\",\n         \"net_price_per_item_cents\": 100,\n         \"item_type\": \"product|service\",\n         \"tax_cents\": 190\n       },\n       {\n         \"quantity\": 10,\n         \"external_reference_id\": \"your-product-id-987-654\",\n         \"title\": \"Product B\",\n         \"net_price_per_item_cents\": 50,\n         \"item_type\": \"product|service\",\n         \"tax_cents\": 95\n       }\n     ]\n   }\n ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/orders/create_async/",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"orders",
+								"create_async",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Order External Info",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var o_ext_ref_id = pm.collectionVariables.get(\"order_external_reference_id\");"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"external_reference_id\":\"updated-{{order_external_reference_id}}\",\n  \"buyer_confirmed_at\": \"2025-01-31 08:27:04\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/orders/{{order_uuid}}/update_external_info",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"orders",
+								"{{order_uuid}}",
+								"update_external_info"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Orders",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/orders",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var orderState = pm.response.json().order.state;",
+									"pm.collectionVariables.set(\"order_state\",orderState);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/orders/{{order_uuid}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"orders",
+								"{{order_uuid}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Invoice Endpoints",
+			"item": [
+				{
+					"name": "Create Invoice - Invoice URL",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var invoiceUUID = pm.response.json().invoice.uuid;",
+									"pm.collectionVariables.set(\"invoice_uuid\", invoiceUUID);",
+									"",
+									"var invoiceExternalReferenceId = pm.response.json().invoice.external_reference_id;",
+									"pm.collectionVariables.set(\"invoice_external_reference_id\",invoiceExternalReferenceId);",
+									"",
+									"",
+									"var iteration = parseInt(pm.collectionVariables.get(\"iteration\")); ",
+									"",
+									"iteration = iteration + 1;",
+									"",
+									"pm.collectionVariables.set(\"iteration\",iteration);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"source\": \"api\",\n  \"issued_at\": \"2023-05-11T10:09:57.533Z\",\n  \"invoice_url\": \"https://cdn.shop.com/media/invoices/59466/your-invoice-id-123-456.pdf\",\n  \"external_reference_id\": \"your-invoice-id-{{$randomUUID}}\",\n  \"gross_amount_cents\": 1875,\n  \"lines\": [\n   {\n     \t\"shipping_price_cents\": 100,\n\t\t\t\"discount_cents\":10,\n       \"line_items\": [\n       {\n         \"quantity\": 10,\n         \"external_reference_id\": \"your-product-id-123-456\",\n         \"title\": \"Product A\",\n         \"net_price_per_item_cents\": 100,\n         \"item_type\": \"product|service\",\n         \"tax_cents\": 190\n       },\n       {\n         \"quantity\": 10,\n         \"external_reference_id\": \"your-product-id-987-654\",\n         \"title\": \"Product B\",\n         \"net_price_per_item_cents\": 50,\n         \"item_type\": \"product|service\",\n         \"tax_cents\": 95\n       }\n     ]\n   }\n ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/orders/{{order_uuid}}/invoices",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"orders",
+								"{{order_uuid}}",
+								"invoices"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Invoice - Invoice PDF with lines",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var invoiceUUID = pm.response.json().invoice.uuid;",
+									"pm.collectionVariables.set(\"invoice_uuid\", invoiceUUID);",
+									"",
+									"var invoiceExternalReferenceId = pm.response.json().invoice.external_reference_id;",
+									"pm.collectionVariables.set(\"invoice_external_reference_id\",invoiceExternalReferenceId);",
+									"",
+									"",
+									"var iteration = parseInt(pm.collectionVariables.get(\"iteration\")); ",
+									"",
+									"iteration = iteration + 1;",
+									"",
+									"pm.collectionVariables.set(\"iteration\",iteration);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "source",
+									"value": "api",
+									"type": "text"
+								},
+								{
+									"key": "issued_at",
+									"value": "2023-05-11T10:09:57.533Z",
+									"type": "text"
+								},
+								{
+									"key": "invoice_url",
+									"value": "https://cdn.shop.com/media/invoices/59466/your-invoice-id-123-456.pdf",
+									"type": "text"
+								},
+								{
+									"key": "external_reference_id",
+									"value": "your-invoice-id-{{$randomUUID}}",
+									"type": "text"
+								},
+								{
+									"key": "gross_amount_cents",
+									"value": "1875",
+									"type": "text"
+								},
+								{
+									"key": "lines[0][shipping_price_cents]",
+									"value": "100",
+									"type": "text"
+								},
+								{
+									"key": "lines[0][discount_cents]",
+									"value": "10",
+									"type": "text"
+								},
+								{
+									"key": "lines[0][line_items][0][quantity]",
+									"value": "10",
+									"type": "text"
+								},
+								{
+									"key": "lines[0][line_items][0][external_reference_id]",
+									"value": "your-product-id-123-456",
+									"type": "text"
+								},
+								{
+									"key": "lines[0][line_items][0][title]",
+									"value": "Product A",
+									"type": "text"
+								},
+								{
+									"key": "lines[0][line_items][0][net_price_per_item_cents]",
+									"value": "100",
+									"type": "text"
+								},
+								{
+									"key": "lines[0][line_items][0][item_type]",
+									"value": "product|service",
+									"type": "text"
+								},
+								{
+									"key": "lines[0][line_items][0][tax_cents]",
+									"value": "190",
+									"type": "text"
+								},
+								{
+									"key": "lines[0][line_items][1][quantity]",
+									"value": "10",
+									"type": "text"
+								},
+								{
+									"key": "lines[0][line_items][1][external_reference_id]",
+									"value": "your-product-id-987-654",
+									"type": "text"
+								},
+								{
+									"key": "lines[0][line_items][1][title]",
+									"value": "Product B",
+									"type": "text"
+								},
+								{
+									"key": "lines[0][line_items][1][net_price_per_item_cents]",
+									"value": "50",
+									"type": "text"
+								},
+								{
+									"key": "lines[0][line_items][1][item_type]",
+									"value": "product|service",
+									"type": "text"
+								},
+								{
+									"key": "lines[0][line_items][1][tax_cents]",
+									"value": "95",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/Users/kuba/Downloads/image001 (1).png"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/orders/{{order_uuid}}/invoices",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"orders",
+								"{{order_uuid}}",
+								"invoices"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Invoice - Invoice PDF without lines",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var invoiceUUID = pm.response.json().invoice.uuid;",
+									"pm.collectionVariables.set(\"invoice_uuid\", invoiceUUID);",
+									"",
+									"var invoiceExternalReferenceId = pm.response.json().invoice.external_reference_id;",
+									"pm.collectionVariables.set(\"invoice_external_reference_id\",invoiceExternalReferenceId);",
+									"",
+									"",
+									"var iteration = parseInt(pm.collectionVariables.get(\"iteration\")); ",
+									"",
+									"iteration = iteration + 1;",
+									"",
+									"pm.collectionVariables.set(\"iteration\",iteration);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/Users/kuba/Downloads/INV-DE-2510-05398.pdf"
+								},
+								{
+									"key": "external_reference_id",
+									"value": "invoice-{{order_external_reference_id}}-{{iteration}}",
+									"type": "text"
+								},
+								{
+									"key": "gross_amount_cents",
+									"value": "1875",
+									"type": "text"
+								},
+								{
+									"key": "",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/orders/{{order_uuid}}/invoices",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"orders",
+								"{{order_uuid}}",
+								"invoices"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Invoices",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/invoices",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"invoices"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Invoices by Order",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/orders/{{order_uuid}}/invoices",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"orders",
+								"{{order_uuid}}",
+								"invoices"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Invoice by UUID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/orders/{{order_uuid}}/invoices/{{invoice_uuid}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"orders",
+								"{{order_uuid}}",
+								"invoices",
+								"{{invoice_uuid}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Factoring Endpoints",
+			"item": [
+				{
+					"name": "Create Factoring - Invocie URL",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var factoring_uuid = pm.response.json().factoring_uuid;",
+									"pm.collectionVariables.set(\"factoring_uuid\", orderUUID);",
+									"",
+									"const randomNumber = _.random(1000000000,9999999999);",
+									"pm.collectionVariables.set(\"randomNumber\", randomNumber);",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n //order specific attibutes\n \"payment_method\": \"invoice\",  //invoice|installment_by_invoice|direct_debit|installments\n \"currency\": \"EUR\",\n \"external_reference_id\": \"your-order-id-{{$randomUUID}}\",\n \"net_term\": 30, // 14|30|60|90\n \n\n \"buyer\": {\n   //mandatory attributes\n   \"email\": \"accepted.max.doe@example.com\", \n   //accepted.jon.max@example.com sets the order to status confirmed\n   //pending.jon.max@example.com sets the order to status pending\n   \"first_name\": \"Max\",\n   \"last_name\": \"Mustermann\",\n \n   //recommended to optimise ux in the mondu hosted checkout page\n   \"external_reference_id\": \"your-buyer-id-{{$randomUUID}}\",\n   \"company_name\": \"Mondu GmbH\",\n   \"legal_form\":\"GmbH\",\n   \"registration_id\": \"HRB 232626 B\", // company registration id\n   \"is_registered\": true, // true if the company is registered\n\n   //recommended to help mondu create better stats on buyer \n   \"account_created_at\": \"2023-08-22T15:25:56.265Z\",\n   \"account_updated_at\": \"2024-08-22T15:25:56.265Z\"\n   \n   //If buyer is onboarded add the buyer uuid sent via buyer webhook\n   //\"uuid\": \"3f228358-a916-436d-b35c-9c9ac869d155\"\n\n },\n\n \"billing_address\": {\n   \"country_code\": \"DE\",\n   \"city\": \"Berlin\",\n   \"zip_code\": \"10117\",\n   \"address_line1\": \"Unter den Linden 16\",\n   \"address_line2\": \"\",\n   \"state\": \"Berlin\"\n },\n\n \"shipping_address\": {\n   \"country_code\": \"DE\",\n   \"city\": \"Berlin\",\n   \"zip_code\": \"10117\",\n   \"address_line1\": \"Unter den Linden 16\",\n   \"address_line2\": \"\",\n   \"state\": \"Berlin\"\n },\n  \"invoice_issued_at\": \"2025-06-10 15:39:54\",\n  \"invoice_external_reference_id\": \"your-invoice-id-{{$randomUUID}}\",\n  \"invoice_url\": \"https://cdn.shop.com/media/invoices/59466/invoice-id-123-456.pdf\",\n  //product related attriburtes\n \"gross_amount_cents\": 1875,\n \"lines\": [\n   {\n      \"shipping_price_cents\": 100,\n      \"discount_cents\": 10,\n       \"line_items\": [\n       {\n         \"quantity\": 10,\n         \"external_reference_id\": \"your-product-id-123-456\",\n         \"title\": \"Product A\",\n         \"net_price_per_item_cents\": 100,\n         \"item_type\": \"product|service\",\n         \"tax_cents\": 190\n       },\n       {\n         \"quantity\": 10,\n         \"external_reference_id\": \"your-product-id-987-654\",\n         \"title\": \"Product B\",\n         \"net_price_per_item_cents\": 50,\n         \"item_type\": \"product|service\",\n         \"tax_cents\": 95\n       }\n     ]\n   }\n ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/factorings",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"factorings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Factoring - Invoice PDF",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var factoring_uuid = pm.response.json().factoring_uuid;",
+									"pm.collectionVariables.set(\"factoring_uuid\", orderUUID);",
+									"",
+									"const randomNumber = _.random(1000000000,9999999999);",
+									"pm.collectionVariables.set(\"randomNumber\", randomNumber);",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "payment_method",
+									"value": "invoice",
+									"type": "text"
+								},
+								{
+									"key": "currency",
+									"value": "EUR",
+									"type": "text"
+								},
+								{
+									"key": "external_reference_id",
+									"value": "your-order-id-123-456",
+									"type": "text"
+								},
+								{
+									"key": "net_term",
+									"value": "30",
+									"type": "text"
+								},
+								{
+									"key": "buyer[email]",
+									"value": "accepted.max.doe@example.com",
+									"type": "text"
+								},
+								{
+									"key": "buyer[first_name]",
+									"value": "Max",
+									"type": "text"
+								},
+								{
+									"key": "buyer[last_name]",
+									"value": "Mustermann",
+									"type": "text"
+								},
+								{
+									"key": "buyer[external_reference_id]",
+									"value": "your-buyer-id-123-456",
+									"type": "text"
+								},
+								{
+									"key": "buyer[company_name]",
+									"value": "Mondu GmbH",
+									"type": "text"
+								},
+								{
+									"key": "buyer[legal_form]",
+									"value": "GmbH",
+									"type": "text"
+								},
+								{
+									"key": "buyer[registration_id]",
+									"value": "HRB232626B",
+									"type": "text"
+								},
+								{
+									"key": "buyer[is_registered]",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "buyer[account_created_at]",
+									"value": "2023-08-22T15:25:56.265Z",
+									"type": "text"
+								},
+								{
+									"key": "buyer[account_updated_at]",
+									"value": "2024-08-22T15:25:56.265Z",
+									"type": "text"
+								},
+								{
+									"key": "billing_address[country_code]",
+									"value": "DE",
+									"type": "text"
+								},
+								{
+									"key": "billing_address[city]",
+									"value": "Berlin",
+									"type": "text"
+								},
+								{
+									"key": "billing_address[zip_code]",
+									"value": "10117",
+									"type": "text"
+								},
+								{
+									"key": "billing_address[address_line1]",
+									"value": "Unter den Linden 16",
+									"type": "text"
+								},
+								{
+									"key": "billing_address[address_line2]",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "billing_address[state]",
+									"value": "Berlin",
+									"type": "text"
+								},
+								{
+									"key": "shipping_address[country_code]",
+									"value": "DE",
+									"type": "text"
+								},
+								{
+									"key": "shipping_address[city]",
+									"value": "Berlin",
+									"type": "text"
+								},
+								{
+									"key": "shipping_address[zip_code]",
+									"value": "10117",
+									"type": "text"
+								},
+								{
+									"key": "shipping_address[address_line1]",
+									"value": "Unter den Linden 16",
+									"type": "text"
+								},
+								{
+									"key": "shipping_address[address_line2]",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "shipping_address[state]",
+									"value": "Berlin",
+									"type": "text"
+								},
+								{
+									"key": "invoice_issued_at",
+									"value": "2025-06-10 15:39:54",
+									"type": "text"
+								},
+								{
+									"key": "invoice_external_reference_id",
+									"value": "your-invoice-id-{{$randomUUID}}",
+									"type": "text"
+								},
+								{
+									"key": "invoice_url",
+									"value": "https://cdn.shop.com/media/invoices/59466/invoice-id-123-456.pdf",
+									"type": "text"
+								},
+								{
+									"key": "gross_amount_cents",
+									"value": "1875",
+									"type": "text"
+								},
+								{
+									"key": "lines[0][shipping_price_cents]",
+									"value": "100",
+									"type": "text"
+								},
+								{
+									"key": "lines[0][discount_cents]",
+									"value": "10",
+									"type": "text"
+								},
+								{
+									"key": "lines[0][line_items][0][quantity]",
+									"value": "10",
+									"type": "text"
+								},
+								{
+									"key": "lines[0][line_items][0][external_reference_id]",
+									"value": "your-product-id-123-456",
+									"type": "text"
+								},
+								{
+									"key": "lines[0][line_items][0][title]",
+									"value": "Product A",
+									"type": "text"
+								},
+								{
+									"key": "lines[0][line_items][0][net_price_per_item_cents]",
+									"value": "100",
+									"type": "text"
+								},
+								{
+									"key": "lines[0][line_items][0][item_type]",
+									"value": "product|service",
+									"type": "text"
+								},
+								{
+									"key": "lines[0][line_items][0][tax_cents]",
+									"value": "190",
+									"type": "text"
+								},
+								{
+									"key": "lines[0][line_items][1][quantity]",
+									"value": "10",
+									"type": "text"
+								},
+								{
+									"key": "lines[0][line_items][1][external_reference_id]",
+									"value": "your-product-id-987-654",
+									"type": "text"
+								},
+								{
+									"key": "lines[0][line_items][1][title]",
+									"value": "Product B",
+									"type": "text"
+								},
+								{
+									"key": "lines[0][line_items][1][net_price_per_item_cents]",
+									"value": "50",
+									"type": "text"
+								},
+								{
+									"key": "lines[0][line_items][1][item_type]",
+									"value": "product|service",
+									"type": "text"
+								},
+								{
+									"key": "lines[0][line_items][1][tax_cents]",
+									"value": "95",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/Users/kuba/Downloads/INV-DE-2510-05398.pdf"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/factorings",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"factorings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Factorings",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/factorings/{{factoring_uuid}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"factorings",
+								"{{factoring_uuid}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Payouts Endpoints",
+			"item": [
+				{
+					"name": "Get Payout UUID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/payouts/{{payout-uuid}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"payouts",
+								"{{payout-uuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Payouts",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var payoutUUID = pm.response.json().payouts[0].uuid;",
+									"pm.collectionVariables.set(\"payout-uuid\", payoutUUID);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/payouts/",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"payouts",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "value",
+				"value": "YOUR-MONDU-DEMO-API",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "Api-Token",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "buyer_uuid",
+			"value": "Receive this value from the buyer webhook."
+		},
+		{
+			"key": "invoice_external_reference_id",
+			"value": ""
+		},
+		{
+			"key": "iteration",
+			"value": "1"
+		},
+		{
+			"key": "randomNumber",
+			"value": "7845805407"
+		},
+		{
+			"key": "webhook_address",
+			"value": "https://webhook.site/108e7be7-160e-489f-bd9f-f9e06dc38c32"
+		},
+		{
+			"key": "webhook_uuid",
+			"value": ""
+		},
+		{
+			"key": "webhook_secret",
+			"value": ""
+		},
+		{
+			"key": "payout-uuid",
+			"value": ""
+		},
+		{
+			"key": "order_uuid",
+			"value": ""
+		},
+		{
+			"key": "order_hosted_checkout_url",
+			"value": ""
+		},
+		{
+			"key": "order_external_reference_id",
+			"value": ""
+		},
+		{
+			"key": "order_state",
+			"value": ""
+		},
+		{
+			"key": "invoice_uuid",
+			"value": ""
+		}
+	]
+}
