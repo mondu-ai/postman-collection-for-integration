@@ -732,6 +732,65 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Adjust Order",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"currency\": \"EUR\",\n   \"amount\": {\n   \"gross_amount_cents\": 2286\n  },\n\n\"lines\": [\n   {\n    \"shipping_price_cents\": 100,\n\t\"discount_cents\":15,\n       \"line_items\": [\n       {\n         \"quantity\": 13,\n         \"external_reference_id\": \"your-product-id-123-456\",\n         \"title\": \"Product A\",\n         \"net_price_per_item_cents\": 100,\n         \"item_type\": \"product|service\",\n         \"tax_cents\": 247\n       },\n       {\n         \"quantity\": 11,\n         \"external_reference_id\": \"your-product-id-987-654\",\n         \"title\": \"Product B\",\n         \"net_price_per_item_cents\": 50,\n         \"item_type\": \"product|service\",\n         \"tax_cents\": 104\n       }\n     ]\n   }\n ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/orders/{{order_uuid}}/adjust",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"orders",
+								"{{order_uuid}}",
+								"adjust"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Order",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "https://api.demo.mondu.ai/api/v1/orders/{{order_uuid}}/cancel",
+							"protocol": "https",
+							"host": [
+								"api",
+								"demo",
+								"mondu",
+								"ai"
+							],
+							"path": [
+								"api",
+								"v1",
+								"orders",
+								"{{order_uuid}}",
+								"cancel"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
